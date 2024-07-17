@@ -1,0 +1,19 @@
+global:
+  resolve_timeout: 5m
+route:
+  receiver: 'my-email'
+  group_wait: 0s # How long to initially wait to send a notification for a group of alerts
+  group_interval: 10s # How long to wait before sending a notification about "new" alerts that are added to a group of alerts for which an initial notification has already been sent.
+  repeat_interval: 1h # How long to wait before sending a notification again if it has already been sent successfully for an "active" alert. The alerts are said to be active, if it is already in the Firing state and the alert expr returns true.
+  group_by: [ alertname ]
+
+
+receivers:
+  - name: 'my-email'
+    email_configs:
+      - smarthost: <email host>
+        auth_username: <email id>
+        auth_identity: <email id>
+        auth_password: <email password>
+        from: <email id>
+        to: <to email id>

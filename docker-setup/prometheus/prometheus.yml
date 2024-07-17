@@ -1,0 +1,33 @@
+global:
+  scrape_interval:    5s # It defines the interval based on which prometheus scrapes a monitored target. It is defined globally but can also be overridden at job level. Defaults to 1 min.
+  evaluation_interval: 5s # It defines the interval based on which prometheus evaluates the query for alerting. In each evaluation cycle, prometheus runs the expression defined in each alerting rule and sets the state of alert
+scrape_configs:
+  - job_name: 'Springboot App Monitoring Job'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['springboot-app:8080']
+        labels:
+          application: 'App Monitoring'
+
+rule_files:
+  - 'alert-rules.yml'
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alert-manager:9093']
+
+  #The time taken to fire an alarm shall vary between :
+
+  #  minimum time = [time set in the 'FOR' clause]
+  #  maximum time = [scrapeInterval + evaluationInterval + 'FOR' clause time]
+
+  #  For eg,
+
+  #  scrapeInterval = 30 sec and
+  #  evaluation interval = 1 min and
+  #  FOR clause set for 2 mins
+
+  # Minimum time to fire alarm => 2 mins.
+  # Maximum time to fire alarm => 30 sec + 1min + 2min => 3 min 30 sec
+
+#NOTE : If FOR clause time is 0, alert will enter the firing state immediately.

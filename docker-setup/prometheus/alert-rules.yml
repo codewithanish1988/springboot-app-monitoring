@@ -1,0 +1,38 @@
+groups:
+  - name: Springboot-app-alerts
+    rules:
+      - alert: ApiError
+        expr: http_server_requests_seconds_max{status !~ '2.*', uri !~ '.*/payment.*'} > 0
+        for: 0s
+        annotations:
+          title: 'API Error'
+          description: 'There is an internal error for {{ $labels.uri }}'
+        labels:
+          severity: major
+
+      - alert: PaymentApiError
+        expr: http_server_requests_seconds_max{status !~ '2.*', uri =~ '.*/payment.*'} > 0
+        for: 0s
+        annotations:
+          title: 'PaymentApiError'
+          description: 'There is an internal error for PaymentApi'
+        labels:
+          severity: critical
+
+      - alert: HighRequestErrorRate
+        expr: (sum(rate(http_server_requests_seconds_count{status="500", uri!~"/actuator.*"}[5m])) / sum(rate(http_server_requests_seconds_count{uri !~ '/actuator.*'}[5m]))) * 100 > 5
+        for: 4m
+        annotations:
+          title: 'High request error rate'
+          description: 'The internal error rate for HTTP requests has reached {{ humanize $value }}% in past 5 minutes'
+        labels:
+          severity: critical
+
+      - alert: HighRequestLatency
+        expr: http_server_requests_seconds_max{status =~ '2.*', uri !~ '/actuator.*' } > 2
+        for: 1m
+        annotations:
+          title: 'High Latency'
+          description: '{{ $labels.uri }} is having high latency of {{ humanize $value }} seconds'
+        labels:
+          severity: warning

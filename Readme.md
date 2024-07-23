@@ -38,3 +38,6 @@
 
 5. ### To stop and remove the Container and Images of the applications
     `docker compose down --rmi all`
+
+# Video Reference
+For detailed video explanation of this project please visit my YouTube channel [CodeWithAnish](https://youtu.be/9fJWVlO2ZSw)
